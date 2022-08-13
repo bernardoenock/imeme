@@ -6,8 +6,8 @@ services:
     build: .
     ports:
       - 4242:4242
-    environment:
-      - PORT=4242
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
@@ -16,8 +16,9 @@ services:
 
   db:
     container_name: db_imemes
-    image: postgres:latest
-    ports: -5431:5432
+    image: postgres:14.3-alpine
+    ports:
+      - 5430:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1234
@@ -28,3 +29,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
+    volumes:
+      - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - db_psql_memes:/var/lib/postgresql/data
+
+volumes:
+  db_psql_memes:
+    driver: local

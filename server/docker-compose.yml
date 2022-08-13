@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  api:
+    container_name: api_imemes
+    build: .
+    ports:
+      - 4242:4242
+    environment:
+      - PORT=4242
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+
+  db:
+    container_name: db_imemes
+    image: postgres:latest
+    ports: -5431:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=imemes_database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d imemes_database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
